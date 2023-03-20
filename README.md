@@ -6,17 +6,17 @@ This will help the organization keep track of who has complied with the policy, 
 
 
 ## Input Files: 
-1.	Master data: Contains employee’s information
+### 1.	Master data: Contains employee’s information
 Full Name	Father Name	Sex	Location	Status	Designation	Operation	Division	Department	Section	Section Code	DOJ
 
-2.	Punch file: Punch in/out details
+### 2.	Punch file: Punch in/out details
 E.Code	IN/OUT	MID	Date	Time	Location
 
-3.	HMSI Calendar2023: 
+### 3.	HMSI Calendar2023: 
 MONTHDATEYEAR	DATEDAY	ISWORKINGDAY
 
 
-Steps and logic:
+## Steps and logic:
 1.	Importing files:
 a.	Month data (compiled punch file)
 b.	Master data (containing associates’ details)
@@ -43,5 +43,8 @@ b.	WFO_Visualization: representation of analysis in Bar graphs.
 
 
 
-Technology used: python, Django and Streamlit
-Platform: VS Code, GitHub, and AWS.
+## Technology used: 
+python, Django and Streamlit
+
+## Platform: 
+VS Code, GitHub, and AWS.
