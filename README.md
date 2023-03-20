@@ -5,7 +5,7 @@ WFO Analysis project will be a web application that takes three Excel files as i
 This will help the organization keep track of who has complied with the policy, and alert those who are not complying.
 
 
-##Input Files: 
+#Input Files: 
 1.	Master data: Contains employee’s information
 Full Name	Father Name	Sex	Location	Status	Designation	Operation	Division	Department	Section	Section Code	DOJ
 
