@@ -7,15 +7,14 @@ This will help the organization keep track of who has complied with the policy, 
 
 ## Input Files: 
 ### 1.	Master data: Contains employee’s information
-![image](https://user-images.githubusercontent.com/43701324/226509286-400cad0a-b60d-4077-974a-7cf54f9009d7.png)
-
-Full Name	Father Name	Sex	Location	Status	Designation	Operation	Division	Department	Section	Section Code	DOJ
+![image](https://user-images.githubusercontent.com/43701324/226509394-e1b4e863-ca17-4c29-ba7e-26a821877671.png)
 
 ### 2.	Punch file: Punch in/out details
-E.Code	IN/OUT	MID	Date	Time	Location
+![image](https://user-images.githubusercontent.com/43701324/226509447-ab0fcede-13a6-408c-8bce-e61adadc10fd.png)
 
 ### 3.	HMSI Calendar2023: 
-MONTHDATEYEAR	DATEDAY	ISWORKINGDAY
+![image](https://user-images.githubusercontent.com/43701324/226509497-f680dd8a-cb03-41cd-86cd-19f0155191f6.png)
+
 
 
 ## Steps and logic:
@@ -32,11 +31,8 @@ b.	Status as ‘withdrawn’ in master data file
 6.	Group latest data-frame by designation, department, division, operation, and location to get count of operations, designation, etc., occurring during that period.
 7.	Group master data by designation, department, division, operation, and location to get count of operations, designation, etc., existing.
 8.	Calculating WFO% (refer below screen shots):
-
- 
-
-
- 
+![image](https://user-images.githubusercontent.com/43701324/226509522-879dc50d-bb81-48df-af3b-b8657c62910e.png)
+![image](https://user-images.githubusercontent.com/43701324/226509539-9dc0721e-e241-4faa-8c7b-de7314427785.png)
 9.	Auto generate two files:
 a.	WFO_Analysis: Analysis in Tabular form.
 b.	WFO_Visualization: representation of analysis in Bar graphs.
