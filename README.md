@@ -33,9 +33,9 @@ b.	Status as ‘withdrawn’ in master data file
 8.	Calculating WFO% (refer below screen shots):
 ![image](https://user-images.githubusercontent.com/43701324/226509522-879dc50d-bb81-48df-af3b-b8657c62910e.png)
 ![image](https://user-images.githubusercontent.com/43701324/226509539-9dc0721e-e241-4faa-8c7b-de7314427785.png)
-9.	Auto generate two files:
-#### a.	WFO_Analysis: Analysis in Tabular form.
-#### b.	WFO_Visualization: representation of analysis in Bar graphs.
+9.	Auto generate two files:<br />
+&nbsp;&nbsp; a.	WFO_Analysis: Analysis in Tabular form.<br />
+&nbsp;&nbsp; b.	WFO_Visualization: representation of analysis in Bar graphs.
 
 10.	In addition, to generating the above files, redirect to analytics dashboard with bar graphs. 
 
