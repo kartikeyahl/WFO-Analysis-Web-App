@@ -18,13 +18,13 @@ This will help the organization keep track of who has complied with the policy, 
 
 
 ## Steps and logic:
-1.	Importing files:
-a.	Month data (compiled punch file)
-b.	Master data (containing associates’ details)
-c.	HMSI calendar location wise. 
-2.	Dropping rows with 
-a.	IN/OUT as 1 and P20.
-b.	Status as ‘withdrawn’ in master data file
+1.	Importing files:<br />
+&nbsp;&nbsp; a.	Month data (compiled punch file)<br />
+&nbsp;&nbsp; b.	Master data (containing associates’ details)<br />
+&nbsp;&nbsp; c.	HMSI calendar location wise. 
+2.	Dropping rows with <br />
+&nbsp;&nbsp; a.	IN/OUT as 1 and P20.<br />
+&nbsp;&nbsp; b.	Status as ‘withdrawn’ in master data file
 3.	Data cleaning (removing missing values, redundant columns/rows, etc.)
 4.	Mapping compiled punch file with master data to get associates details like name, designation, department, division, operation, and location as data-frame.
 5.	Group latest data-frame by designation, department, division, operation, and location.
