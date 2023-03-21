@@ -7,6 +7,8 @@ This will help the organization keep track of who has complied with the policy, 
 
 ## Input Files: 
 ### 1.	Master data: Contains employee’s information
+![image](https://user-images.githubusercontent.com/43701324/226509286-400cad0a-b60d-4077-974a-7cf54f9009d7.png)
+
 Full Name	Father Name	Sex	Location	Status	Designation	Operation	Division	Department	Section	Section Code	DOJ
 
 ### 2.	Punch file: Punch in/out details
