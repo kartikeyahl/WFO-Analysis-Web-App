@@ -10,10 +10,10 @@ This will help the organization keep track of who has complied with the policy, 
 ![image](https://user-images.githubusercontent.com/43701324/226509394-e1b4e863-ca17-4c29-ba7e-26a821877671.png)
 
 ### 2.	Punch file: Punch in/out details
-![image](https://user-images.githubusercontent.com/43701324/226509447-ab0fcede-13a6-408c-8bce-e61adadc10fd.png)
+![image](https://user-images.githubusercontent.com/43701324/226511134-c97e22ee-9312-442e-8396-bc8a430df913.png)
 
 ### 3.	HMSI Calendar2023: 
-![image](https://user-images.githubusercontent.com/43701324/226509497-f680dd8a-cb03-41cd-86cd-19f0155191f6.png)
+![image](https://user-images.githubusercontent.com/43701324/226511180-b65552ee-c14c-4e84-9f57-50e0b3233582.png)
 
 
 
