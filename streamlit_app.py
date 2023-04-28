@@ -16,6 +16,7 @@ import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 
 st.set_page_config(page_title="WFO App", layout="wide", initial_sidebar_state="expanded")
+st.set_option('client.showErrorDetails', False)
 
 # Use Streamlit's file uploader to allow the user to select an Excel file
 col1, col2, col3 = st.columns(3)
