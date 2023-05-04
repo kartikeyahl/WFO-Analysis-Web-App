@@ -16,7 +16,6 @@ import matplotlib.patches as mpatches
 import matplotlib.lines as mlines
 
 st.set_page_config(page_title="WFO App", layout="wide", initial_sidebar_state="expanded")
-st.set_option('client.showErrorDetails', False)
 
 # Use Streamlit's file uploader to allow the user to select an Excel file
 col1, col2, col3 = st.columns(3)
@@ -54,7 +53,7 @@ def wfo():
         end_date = pd.to_datetime(dataset.iloc[-1]['Date'])
         working_days = dataset3.loc[(dataset3['MONTHDATEYEAR'] >=start_date) & (dataset3['MONTHDATEYEAR'] <= end_date), 'ISWORKINGDAY'].sum()
         dataset.dropna(inplace=True)
-
+        print(working_days)
         dataset = dataset.groupby(['E.Code']).size().reset_index(name='counts')
 
         ll1=[]
