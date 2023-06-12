@@ -25,13 +25,21 @@ with col2:
     uploaded_file2 = st.file_uploader("Choose a master data file", type="xlsx")
 with col3:
     uploaded_file3 = st.file_uploader("Choose a calendar file", type="xlsx")
-
+global dataset 
+dataset = pd.read_excel(uploaded_file,parse_dates=['Date'],date_parser=lambda x: pd.to_datetime(x, format='%Y%m%d'))
+# Create sidebar widgets for "From" and "To" dates
+st.sidebar.header("Please filter here:")
+from_date = st.sidebar.date_input("From Date", value=dataset['Date'].min())
+to_date = st.sidebar.date_input("To Date", value=dataset['Date'].max())
+# Convert the date input values to datetime objects
+from_date = pd.to_datetime(from_date)
+to_date = pd.to_datetime(to_date)
+dataset = dataset[(dataset['Date'] >= from_date) & (dataset['Date'] <= to_date)]
 st.markdown("---")
 
 # If a file was uploaded
-def wfo():
+def wfo(dataset):
     if uploaded_file is not None:
-        dataset = pd.read_excel(uploaded_file,parse_dates=['Date'],date_parser=lambda x: pd.to_datetime(x, format='%Y%m%d'))
         dataset2=pd.read_excel(uploaded_file2)
         dataset3=pd.read_excel(uploaded_file3)
         
@@ -53,7 +61,6 @@ def wfo():
         end_date = pd.to_datetime(dataset.iloc[-1]['Date'])
         working_days = dataset3.loc[(dataset3['MONTHDATEYEAR'] >=start_date) & (dataset3['MONTHDATEYEAR'] <= end_date), 'ISWORKINGDAY'].sum()
         dataset.dropna(inplace=True)
-        print(working_days)
         dataset = dataset.groupby(['E.Code']).size().reset_index(name='counts')
 
         ll1=[]
@@ -199,13 +206,11 @@ def wfo():
 
 if uploaded_file is not None and uploaded_file2 is not None and uploaded_file3 is not None:
     wfo1 = st.cache_data(wfo)
-    result_wfo_associate,result_wfo_operation,result_wfo_division,result_wfo_location,result_wfo_designation,result_wfo_department,working_days,dataset2 = wfo1()
+    result_wfo_associate,result_wfo_operation,result_wfo_division,result_wfo_location,result_wfo_designation,result_wfo_department,working_days,dataset2 = wfo1(dataset)
 
 else:
-    result_wfo_associate,result_wfo_operation,result_wfo_division,result_wfo_location,result_wfo_designation,result_wfo_department,working_days,dataset2 = wfo()
+    result_wfo_associate,result_wfo_operation,result_wfo_division,result_wfo_location,result_wfo_designation,result_wfo_department,working_days,dataset2 = wfo(dataset)
     
-
-st.sidebar.header("Please filter here:")
 
 # Define the table styles
 table_styles = [
@@ -233,63 +238,124 @@ table_styles = [
 
 search_value = st.sidebar.number_input("Search by E.Code:", step=1)
 
+option = st.selectbox(
+    'Sort Division on basis of:',
+    ('Operation', 'Location')
+)
+
+if option == 'Operation' or option==None :
 # r3=result_wfo_associate.groupby('Operation')['Division'].unique().apply(list).to_dict()
-r3 = (
-    result_wfo_associate.groupby('Operation')
-    .apply(lambda x: x.groupby('Division')['Department'].unique().apply(list).to_dict())
-    .to_dict()
-)
+    r3 = (
+        result_wfo_associate.groupby('Operation')
+        .apply(lambda x: x.groupby('Division')['Department'].unique().apply(list).to_dict())
+        .to_dict()
+    )
+
+    operation=st.sidebar.multiselect(
+    "Select Operation:",
+    options=result_wfo_operation["Operation"].unique(),
+    default=result_wfo_operation["Operation"].unique().tolist()
+    )
+
+    divi = []
+    for o in operation:
+        for i in r3[o]:
+            divi.append(i)
+    divi=[x for x in divi if not isinstance(x, float) or not np.isnan(x)]
+    division=st.sidebar.multiselect(
+    "Select Division:",
+    options= result_wfo_division["Division"].unique(),
+    default=divi
+    )
+
+    depart = []
+    for o in operation:
+        for d in r3[o]:
+            for i in r3[o][d]:
+                depart.append(i)
+    depart=[x for x in depart if not isinstance(x, float) or not np.isnan(x)]
+    department=st.sidebar.multiselect(
+    "Select Department:",
+    options=result_wfo_department["Department"].unique(),
+    default=depart
+    )
+
+    mask = result_wfo_associate['Department'].isin(depart)
+    r4 = result_wfo_associate[mask].groupby('Department')['Designation'].unique().apply(list).to_dict()
+
+    des = []
+    for i in r4.values():
+        for j in i:
+            des.append(j)   
+    des=list(set([x for x in des if not isinstance(x, float) or not np.isnan(x)]))
+    designation=st.sidebar.multiselect(
+    "Select Designation:",
+    options=result_wfo_designation["Designation"].unique(),
+    default=des
+    )
+
+    location = st.sidebar.multiselect(
+        "Select Location:",
+        options=result_wfo_location["Location"].unique(),
+        default=result_wfo_location["Location"].unique().tolist()
+    )
 
 
+if option == 'Location':
+    r3 = (
+        result_wfo_associate.groupby('Location')
+        .apply(lambda x: x.groupby('Division')['Department'].unique().apply(list).to_dict())
+        .to_dict()
+    )
+    
+    location = st.sidebar.multiselect(
+        "Select Location:",
+        options=result_wfo_location["Location"].unique(),
+        default=result_wfo_location["Location"].unique().tolist()
+    )
 
-operation=st.sidebar.multiselect(
-"Select Operation:",
-options=result_wfo_operation["Operation"].unique(),
-default=result_wfo_operation["Operation"].unique().tolist()
-)
+    operation=st.sidebar.multiselect(
+    "Select Operation:",
+    options=result_wfo_operation["Operation"].unique(),
+    default=result_wfo_operation["Operation"].unique().tolist()
+    )
 
-divi = []
-for o in operation:
-    for i in r3[o]:
-        divi.append(i)
-divi=[x for x in divi if not isinstance(x, float) or not np.isnan(x)]
-division=st.sidebar.multiselect(
-"Select Division:",
-options= result_wfo_division["Division"].unique(),
-default=divi
-)
+    divi = []
+    for o in location:
+        for i in r3[o]:
+            divi.append(i)
+    divi=[x for x in divi if not isinstance(x, float) or not np.isnan(x)]
+    division=st.sidebar.multiselect(
+    "Select Division:",
+    options= result_wfo_division["Division"].unique(),
+    default=divi
+    )
 
-depart = []
-for o in operation:
-    for d in r3[o]:
-        for i in r3[o][d]:
-            depart.append(i)
-depart=[x for x in depart if not isinstance(x, float) or not np.isnan(x)]
-department=st.sidebar.multiselect(
-"Select Department:",
-options=result_wfo_department["Department"].unique(),
-default=depart
-)
+    depart = []
+    for o in location:
+        for d in r3[o]:
+            for i in r3[o][d]:
+                depart.append(i)
+    depart=[x for x in depart if not isinstance(x, float) or not np.isnan(x)]
+    department=st.sidebar.multiselect(
+    "Select Department:",
+    options=result_wfo_department["Department"].unique(),
+    default=depart
+    )
 
-mask = result_wfo_associate['Department'].isin(depart)
-r4 = result_wfo_associate[mask].groupby('Department')['Designation'].unique().apply(list).to_dict()
+    mask = result_wfo_associate['Department'].isin(depart)
+    r4 = result_wfo_associate[mask].groupby('Department')['Designation'].unique().apply(list).to_dict()
 
-des = []
-for i in r4.values():
-    for j in i:
-        des.append(j)   
-des=list(set([x for x in des if not isinstance(x, float) or not np.isnan(x)]))
-designation=st.sidebar.multiselect(
-"Select Designation:",
-options=result_wfo_designation["Designation"].unique(),
-default=des
-)
-
-location = st.sidebar.multiselect(
-    "Select Location:",
-    options=result_wfo_location["Location"].unique(),
-    default=result_wfo_location["Location"].unique().tolist()
-)
+    des = []
+    for i in r4.values():
+        for j in i:
+            des.append(j)   
+    des=list(set([x for x in des if not isinstance(x, float) or not np.isnan(x)]))
+    designation=st.sidebar.multiselect(
+    "Select Designation:",
+    options=result_wfo_designation["Designation"].unique(),
+    default=des
+    )
 
 df_selection = result_wfo_operation.query("Operation == @operation")
 df_selection2 = result_wfo_division.query("Division == @division")
@@ -317,11 +383,6 @@ if result_wfo_operation is not None:
         if result_wfo_dess.iloc[i]['Designation']!='NaN':
             xx=(result_wfo_dess.iloc[i]['Counts']/(result_wfo_dess_manpower[result_wfo_dess.iloc[i]['Designation']][0]*working_days))*100
             percent_wfo_dess.append(xx)  
-    print(result_wfo_dess)
-    print("-----------------------")
-    print(result_wfo_dess_manpower)
-    print("-----------------------")
-    print(percent_wfo_dess)
 
     percent_wfo_dess2 = [round(i,1) for i in percent_wfo_dess]
 
@@ -348,60 +409,133 @@ bars_loc = alt.Chart(df_selection5).mark_bar().encode(
         alt.value('green')  # bars below 75% will be green
     )
 )
+# Filter the data to include only rows with Percent above 75
+filtered_data1 = df_selection[df_selection['Percent'] > 75]
+filtered_data2 = result_wfo_designationn[result_wfo_designationn['Percent'] > 75]
+filtered_data3 = df_selection2[df_selection2['Percent'] > 75]
+filtered_data4 = df_selection3[df_selection3['Percent'] > 75]
 
-# create an Altair bar chart
-bars_opr = alt.Chart(df_selection).mark_bar().encode(
-    x=alt.X('Operation', axis=alt.Axis(labelAngle=-90)),
-    y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
-    color=alt.condition(
-        alt.datum.Percent >= 75,
-        alt.value('red'),  # bars above 75% will be red
-        alt.value('green')  # bars below 75% will be green
+toggle_button = st.checkbox("Greater than 75%")
+if toggle_button:
+    # create an Altair bar chart
+    bars_opr = alt.Chart(filtered_data1).mark_bar().encode(
+        x=alt.X('Operation', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
     )
-)
 
-# create an Altair bar chart
-bars_des = alt.Chart(result_wfo_designationn).mark_bar().encode(
-    x=alt.X('Designation', axis=alt.Axis(labelAngle=-90)),
-    y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
-    color=alt.condition(
-        alt.datum.Percent >= 75,
-        alt.value('red'),  # bars above 75% will be red
-        alt.value('green')  # bars below 75% will be green
+    # create an Altair bar chart
+    bars_des = alt.Chart(filtered_data2).mark_bar().encode(
+        x=alt.X('Designation', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
     )
-)
 
-# create an Altair bar chart
-bars_div = alt.Chart(df_selection2).mark_bar().encode(
-    x=alt.X('Division', axis=alt.Axis(labelAngle=-90)),
-    y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
-    color=alt.condition(
-        alt.datum.Percent >= 75,
-        alt.value('red'),  # bars above 75% will be red
-        alt.value('green')  # bars below 75% will be green
+    # create an Altair bar chart
+    bars_div = alt.Chart(filtered_data3).mark_bar().encode(
+        x=alt.X('Division', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
     )
-)
 
-# create an Altair bar chart
-bars_dept = alt.Chart(df_selection3).mark_bar().encode(
-    x=alt.X('Department', axis=alt.Axis(labelAngle=-90)),
-    y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
-    color=alt.condition(
-        alt.datum.Percent >= 75,
-        alt.value('red'),  # bars above 75% will be red
-        alt.value('green')  # bars below 75% will be green
+    # create an Altair bar chart
+    bars_dept = alt.Chart(filtered_data4).mark_bar().encode(
+        x=alt.X('Department', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
     )
-)
+
+else:
+    # create an Altair bar chart
+    bars_opr = alt.Chart(df_selection).mark_bar().encode(
+        x=alt.X('Operation', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
+    )
+
+    # create an Altair bar chart
+    bars_des = alt.Chart(result_wfo_designationn).mark_bar().encode(
+        x=alt.X('Designation', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
+    )
+
+    # create an Altair bar chart
+    bars_div = alt.Chart(df_selection2).mark_bar().encode(
+        x=alt.X('Division', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
+    )
+
+    # create an Altair bar chart
+    bars_dept = alt.Chart(df_selection3).mark_bar().encode(
+        x=alt.X('Department', axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        color=alt.condition(
+            alt.datum.Percent >= 75,
+            alt.value('red'),  # bars above 75% will be red
+            alt.value('green')  # bars below 75% will be green
+        )
+    )
+
+# Create an Altair text chart for value labels
+def label_fun(df,x):
+    labels_dept = alt.Chart(df).mark_text(
+        align='center',
+        baseline='middle',
+        dy=-5,  # Adjust vertical position of the labels
+    ).encode(
+        x=alt.X(x, axis=alt.Axis(labelAngle=-90)),
+        y=alt.Y('Percent', axis=alt.Axis(title='Percentage')),
+        text=alt.Text('Percent:Q', format='.1f'),  # Display bar values with 2 decimal places
+    )
+    return labels_dept
 
 # add a red dotted line at 75%
 rule = alt.Chart(pd.DataFrame({'y': [75]})).mark_rule(color='red', strokeDash=[3,3]).encode(y='y')
 
 # combine the bar chart and the rule
-chart_opr = (bars_opr + rule).properties(width=alt.Step(40))
-chart_div = (bars_div + rule).properties(width=alt.Step(40))
-chart_des = (bars_des + rule).properties(width=alt.Step(40))
-chart_loc = (bars_loc + rule).properties(width=alt.Step(40))
-chart_dept = (bars_dept + rule).properties(width=alt.Step(40))
+if toggle_button:
+    chart_opr = (bars_opr +label_fun(filtered_data1,'Operation')+ rule).properties(width=alt.Step(40))
+    chart_div = (bars_div +label_fun(filtered_data3,'Division')+ rule).properties(width=alt.Step(40))
+    chart_des = (bars_des +label_fun(filtered_data2,'Designation')+ rule).properties(width=alt.Step(40))
+    chart_loc = (bars_loc +label_fun(df_selection5,'Location')+ rule).properties(width=alt.Step(40))
+    chart_dept = (bars_dept + label_fun(filtered_data4,'Department')+ rule).properties(width=alt.Step(40))
+
+else:
+    chart_opr = (bars_opr +label_fun(df_selection,'Operation')+ rule).properties(width=alt.Step(40))
+    chart_div = (bars_div +label_fun(df_selection2,'Division')+ rule).properties(width=alt.Step(40))
+    chart_des = (bars_des +label_fun(result_wfo_designationn,'Designation')+ rule).properties(width=alt.Step(40))
+    chart_loc = (bars_loc +label_fun(df_selection5,'Location')+ rule).properties(width=alt.Step(40))
+    chart_dept = (bars_dept + label_fun(df_selection3,'Department')+ rule).properties(width=alt.Step(40))
 
 
 
@@ -419,7 +553,3 @@ st.altair_chart(chart_div | legend)
 st.altair_chart(chart_dept | legend)
 st.altair_chart(chart_des | legend)
 st.altair_chart(chart_loc | legend)
-
-
-# st.altair_chart(chart_des | legend)
-# st.altair_chart(chart_loc | legend)
