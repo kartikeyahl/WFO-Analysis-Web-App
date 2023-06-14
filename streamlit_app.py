@@ -553,3 +553,7 @@ st.altair_chart(chart_div | legend)
 st.altair_chart(chart_dept | legend)
 st.altair_chart(chart_des | legend)
 st.altair_chart(chart_loc | legend)
+
+
+# st.altair_chart(chart_des | legend)
+# st.altair_chart(chart_loc | legend)
