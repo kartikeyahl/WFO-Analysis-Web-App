@@ -25,17 +25,17 @@ with col2:
     uploaded_file2 = st.file_uploader("Choose a master data file", type="xlsx")
 with col3:
     uploaded_file3 = st.file_uploader("Choose a calendar file", type="xlsx")
-global dataset 
-dataset = pd.read_excel(uploaded_file,parse_dates=['Date'],date_parser=lambda x: pd.to_datetime(x, format='%Y%m%d'))
-# Create sidebar widgets for "From" and "To" dates
-st.sidebar.header("Please filter here:")
-from_date = st.sidebar.date_input("From Date", value=dataset['Date'].min())
-to_date = st.sidebar.date_input("To Date", value=dataset['Date'].max())
-# Convert the date input values to datetime objects
-from_date = pd.to_datetime(from_date)
-to_date = pd.to_datetime(to_date)
-dataset = dataset[(dataset['Date'] >= from_date) & (dataset['Date'] <= to_date)]
-st.markdown("---")
+if uploaded_file is not None:
+    dataset = pd.read_excel(uploaded_file,parse_dates=['Date'],date_parser=lambda x: pd.to_datetime(x, format='%Y%m%d'))
+    # Create sidebar widgets for "From" and "To" dates
+    st.sidebar.header("Please filter here:")
+    from_date = st.sidebar.date_input("From Date", value=dataset['Date'].min())
+    to_date = st.sidebar.date_input("To Date", value=dataset['Date'].max())
+    # Convert the date input values to datetime objects
+    from_date = pd.to_datetime(from_date)
+    to_date = pd.to_datetime(to_date)
+    dataset = dataset[(dataset['Date'] >= from_date) & (dataset['Date'] <= to_date)]
+    st.markdown("---")
 
 # If a file was uploaded
 def wfo(dataset):
