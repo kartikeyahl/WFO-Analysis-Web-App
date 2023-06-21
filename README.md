@@ -1,8 +1,8 @@
 # WFO-Analysis-Web-App
 
 At Honda, divisions are required to maintain a 3:1 WFO:WFH ratio for their associates/employees, meaning 75% WFO and 25% WFH. 
-WFO Analysis project will be a web application that takes three Excel files as input and provides visualizations and tabular reports on the WFO percentage completed within each operation, division, department, and designation. 
-This will help the organization keep track of who has complied with the policy, and alert those who are not complying.
+The WFO Analysis dashboard is a web application that inputs three Excel files from the users and provides visualizations on the WFO percentage completed within each operation, division, department, and designation. 
+This helps the organization keep track of who has complied with the policy, and alert those who are not complying.
 
 
 ## Input Files: 
@@ -33,16 +33,15 @@ This will help the organization keep track of who has complied with the policy, 
 8.	Calculating WFO% (refer below screen shots):
 ![image](https://user-images.githubusercontent.com/43701324/226509522-879dc50d-bb81-48df-af3b-b8657c62910e.png)
 ![image](https://user-images.githubusercontent.com/43701324/226509539-9dc0721e-e241-4faa-8c7b-de7314427785.png)
-9.	Auto generate two files:<br />
-&nbsp;&nbsp; a.	WFO_Analysis: Analysis in Tabular form.<br />
-&nbsp;&nbsp; b.	WFO_Visualization: representation of analysis in Bar graphs.
-
-10.	In addition, to generating the above files, redirect to analytics dashboard with bar graphs. 
+9.	Analytics dashboard with bar graphs.
 
 
 
 ## Technology used: 
-python, Django and Streamlit
+python -> Backend logic development
+Streamlit -> Frontend, packing it with backend code to create a single file (streamlit_app.py)
+Streamlit Cloud -> Hosting
+GitHub -> File storage and version control
 
 ## Platform: 
-VS Code, GitHub, and AWS.
+VS Code, GitHub, and Streamlit Cloud.
